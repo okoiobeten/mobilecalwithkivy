@@ -26,16 +26,19 @@ jobs:
 
       - name: Install Android SDK components
         run: |
-          # Install essential Android SDK tools
-          mkdir -p "$HOME/.buildozer/android/platform/android-sdk"
+          # Set up Android SDK and cmdline-tools
+          mkdir -p "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools"
           wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O cmdline-tools.zip
           unzip cmdline-tools.zip -d "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools"
           mv "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/cmdline-tools" "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest"
           
-          # Accept licenses for Android SDK tools
+          # Set ANDROID_SDK_ROOT environment variable for Buildozer
+          echo "export ANDROID_SDK_ROOT=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+
+          # Accept licenses
           yes | "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager" --licenses
 
-          # Install `aidl` and other build tools
+          # Install SDK components, including build-tools and platform-tools
           "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "build-tools;33.0.0" "platforms;android-33"
 
       - name: Initialize Buildozer
