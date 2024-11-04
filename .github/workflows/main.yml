@@ -9,35 +9,39 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Check out code
-      uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: "3.8"
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
 
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y python3-pip openjdk-8-jdk unzip
-        pip install --upgrade pip
-        pip install buildozer
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip openjdk-8-jdk unzip
+          pip install --upgrade pip
+          pip install buildozer
 
-    - name: Initialize Buildozer
-      run: |
-        buildozer init
+      - name: Install Cython
+        run: |
+          pip install Cython==0.29.36  # Specify the Cython version to avoid compatibility issues
 
-    - name: Configure buildozer.spec
-      run: |
-        sed -i 's/# \(requirements = .*\)/\1, kivy, kivymd/' buildozer.spec
+      - name: Initialize Buildozer
+        run: |
+          buildozer init
 
-    - name: Build APK
-      run: |
-        buildozer -v android debug
+      - name: Configure buildozer.spec
+        run: |
+          sed -i 's/# \(requirements = .*\)/\1, kivy, kivymd/' buildozer.spec
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app
-        path: bin/*.apk
+      - name: Build APK
+        run: |
+          buildozer -v android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: bin/*.apk
