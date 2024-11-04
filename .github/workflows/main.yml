@@ -22,11 +22,21 @@ jobs:
           sudo apt update
           sudo apt install -y python3-pip openjdk-8-jdk unzip
           pip install --upgrade pip
-          pip install buildozer
+          pip install buildozer Cython==0.29.36
 
-      - name: Install Cython
+      - name: Install Android SDK components
         run: |
-          pip install Cython==0.29.36  # Specify the Cython version to avoid compatibility issues
+          # Install essential Android SDK tools
+          mkdir -p "$HOME/.buildozer/android/platform/android-sdk"
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip -d "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools"
+          mv "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/cmdline-tools" "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest"
+          
+          # Accept licenses for Android SDK tools
+          yes | "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager" --licenses
+
+          # Install `aidl` and other build tools
+          "$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "build-tools;33.0.0" "platforms;android-33"
 
       - name: Initialize Buildozer
         run: |
